@@ -18,7 +18,7 @@ Nuestro proyecto busca abordar esta problemática mediante el desarrollo de una 
 - Correo: alexisdanieldr@gmail.com  
 - Usuario de git: Maxxired
 
-### Sánchez Roano Carlos Alonso
+### Suárez Vargas Mauricio Saul
 - Correo: mauricio.suv1@gmail.com
 - Usuario de git: SirMauricio
 
