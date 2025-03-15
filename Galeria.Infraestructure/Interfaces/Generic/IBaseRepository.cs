@@ -40,6 +40,12 @@ namespace Galeria.Infraestructure.Repositories.Generic
         /// <param name="filter">The filter.</param>
         /// <returns></returns>
         Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null);
+        Task<List<T>> GetAllFilterAsync(
+            int? page = null, int? limit = null,
+            string? orderBy = null, string? orderDirection = "asc",
+            DateTime? startDate = null, DateTime? endDate = null,
+            string? filterField = null, string? filterValue = null,
+            string? relationField = null, int? relationId = null);
         /// <summary>
         /// Gets the single asynchronous.
         /// </summary>

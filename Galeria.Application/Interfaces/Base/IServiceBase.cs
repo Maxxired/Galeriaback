@@ -6,6 +6,12 @@ namespace Galeria.Application.Interfaces.Base
 {
     public interface IServiceBase<T, TDto> where T : class where TDto : BaseDTO
     {
+        Task<ResponseHelper> GetAllFilterAsync(
+        int? page = null, int? limit = null,
+        string? orderBy = null, string? orderDirection = "asc",
+        DateTime? startDate = null, DateTime? endDate = null,
+        string? filterField = null, string? filterValue = null,
+        string? relationField = null, int? relationId = null);
         Task<ResponseHelper> GetAllAsync(Expression<Func<T, bool>>? filter = null);
         Task<ResponseHelper> InsertAsync(T entity);
         Task<ResponseHelper> UpdateAsync(T entity);

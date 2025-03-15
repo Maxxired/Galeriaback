@@ -1,5 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Dapper;
+using System.Data;
+using System.Text;
+using System.Data.Common;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Microsoft.AspNetCore.Http.Extensions;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
 
 namespace Galeria.Infraestructure.Repositories.Generic
 {
@@ -116,6 +124,63 @@ namespace Galeria.Infraestructure.Repositories.Generic
 
             return await query.ToListAsync();
         }
+        public async Task<List<T>> GetAllFilterAsync(
+            int? page = null, int? limit = null,
+            string? orderBy = null, string? orderDirection = "asc",
+            DateTime? startDate = null, DateTime? endDate = null,
+            string? filterField = null, string? filterValue = null,
+            string? relationField = null, int? relationId = null)
+        {
+            var tableName = typeof(T).GetCustomAttribute<TableAttribute>()?.Name ?? typeof(T).Name;
+
+            var sql = new StringBuilder($"SELECT * FROM {tableName} WHERE IsDeleted = 0 ");
+
+            var parameters = new DynamicParameters();
+
+            // Filtrar por rango de fechas
+            if (startDate.HasValue)
+            {
+                sql.Append(" AND CreatedAt >= @StartDate");
+                parameters.Add("StartDate", startDate.Value);
+            }
+            if (endDate.HasValue)
+            {
+                sql.Append(" AND CreatedAt <= @EndDate");
+                parameters.Add("EndDate", endDate.Value);
+            }
+
+            // Filtro por campo específico
+            if (!string.IsNullOrEmpty(filterField) && !string.IsNullOrEmpty(filterValue))
+            {
+                sql.Append($" AND {filterField} LIKE @FilterValue");
+                parameters.Add("FilterValue", $"%{filterValue}%");
+            }
+
+            // Filtro por relación
+            if (!string.IsNullOrEmpty(relationField) && relationId.HasValue)
+            {
+                sql.Append($" AND {relationField} = @RelationId");
+                parameters.Add("RelationId", relationId.Value);
+            }
+
+            // Ordenamiento
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sql.Append($" ORDER BY {orderBy} {orderDirection}");
+            }
+
+            // Paginación opcional
+            if (page.HasValue && limit.HasValue)
+            {
+                int offset = (page.Value - 1) * limit.Value;
+                sql.Append(" LIMIT @Limit OFFSET @Offset");
+                parameters.Add("Limit", limit.Value);
+                parameters.Add("Offset", offset);
+            }
+
+            var result = await Context.Database.GetDbConnection().QueryAsync<T>(sql.ToString(), parameters);
+            return result.ToList();
+        }
 
 
         /// <summary>
@@ -140,5 +205,5 @@ namespace Galeria.Infraestructure.Repositories.Generic
             return await query.FirstOrDefaultAsync();
         }
 
-    }
+        }
 }

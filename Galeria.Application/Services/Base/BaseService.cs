@@ -35,29 +35,6 @@ namespace Galeria.Application.Services.Base
             await _LogError.LogErrorAsync(ex, typeof(T).GetDisplayName());
         }
 
-        public async Task<ResponseHelper> GetAllAsync(Expression<Func<T, bool>>? filter = null)
-        {
-            ResponseHelper response = new ResponseHelper();
-            try
-            {
-                var data = await _repository.GetAllAsync(filter);
-
-                response.Success = true;
-                response.Data = data;
-
-                string dataAsJson = JsonSerializer.Serialize(response.Data);
-                await LogAction("GetAllAsync", dataAsJson);
-            }
-            catch (Exception e)
-            {
-                await LogError(e);
-                Log.Error(e.Message);
-                response.Message = e.Message;
-            }
-
-            return response;
-        }
-
         public virtual async Task<ResponseHelper> InsertAsync(T entity)
         {
             ResponseHelper response = new ResponseHelper();
@@ -207,6 +184,52 @@ namespace Galeria.Application.Services.Base
 
             return response;
         }
+        public async Task<ResponseHelper> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+        {
+            ResponseHelper response = new ResponseHelper();
+            try
+            {
+                var data = await _repository.GetAllAsync(filter);
+
+                response.Success = true;
+                response.Data = data;
+
+                string dataAsJson = JsonSerializer.Serialize(response.Data);
+                await LogAction("GetAllAsync", dataAsJson);
+            }
+            catch (Exception e)
+            {
+                await LogError(e);
+                Log.Error(e.Message);
+                response.Message = e.Message;
+            }
+
+            return response;
+        }
+        public async Task<ResponseHelper> GetAllFilterAsync(
+        int? page = null, int? limit = null,
+        string? orderBy = null, string? orderDirection = "asc",
+        DateTime? startDate = null, DateTime? endDate = null,
+        string? filterField = null, string? filterValue = null,
+        string? relationField = null, int? relationId = null)
+        {
+            ResponseHelper response = new ResponseHelper();
+            try
+            {
+                var data = await _repository.GetAllFilterAsync(page, limit, orderBy, orderDirection, startDate, endDate, filterField, filterValue, relationField, relationId);
+                response.Success = true;
+                response.Data = data;
+                string dataAsJson = JsonSerializer.Serialize(response.Data);
+                await LogAction("GetAllFilterAsync", dataAsJson);
+            }
+            catch (Exception e)
+            {
+                await LogError(e);
+                response.Message = e.Message;
+            }
+            return response;
+        }
+
 
         public async Task<TDto> ConvertToDto(T entity)
         {

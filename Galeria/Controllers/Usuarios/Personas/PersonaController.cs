@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Galeria.Application.Interfaces.Usuarios.Personas;
 using Galeria.Domain.Common.ViewModels.Personas;
 using Galeria.Domain.Common.ViewModels.Util;
-using Galeria.Domain.DTO.Usuarios.Personas;
 using Galeria.Domain.Entities.Usuarios.Personas;
 using Galeria.API.Controllers.BaseGeneric;
+using Galeria.Domain.DTO.Usuarios.Personas;
 
 namespace Galeria.WebAPI.Controllers.Usuarios.Personas
 {

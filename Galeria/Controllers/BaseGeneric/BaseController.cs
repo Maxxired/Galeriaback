@@ -33,12 +33,22 @@ namespace Galeria.API.Controllers.BaseGeneric
         /// Gets all.
         /// </summary>
         /// <returns></returns>
-
         [HttpGet]
         public virtual async Task<ActionResult<List<TDto>>> GetAll()
         {
             var result = await _service.GetAllAsync();
 
+            return Ok(result);
+        }
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<TDto>>> GetFiltered(
+        [FromQuery] int? page = null, [FromQuery] int? limit = null,
+        [FromQuery] string? orderBy = null, [FromQuery] string? orderDirection = "asc",
+        [FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null,
+        [FromQuery] string? filterField = null, [FromQuery] string? filterValue = null,
+        [FromQuery] string? relationField = null, [FromQuery] int? relationId = null)
+        {
+            var result = await _service.GetAllFilterAsync(page, limit, orderBy, orderDirection, startDate, endDate, filterField, filterValue, relationField, relationId);
             return Ok(result);
         }
 

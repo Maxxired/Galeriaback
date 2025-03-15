@@ -5,12 +5,12 @@ using Galeria.Application.Interfaces.Usuarios.Personas;
 using Galeria.Application.Services.Base;
 using Galeria.Domain.Common.ViewModels.Personas;
 using Galeria.Domain.Common.ViewModels.Util;
-using Galeria.Domain.DTO.Usuarios.Personas;
 using Galeria.Domain.Entities.Usuarios.Personas;
 using Galeria.Infraestructure.Interfaces.Usuarios.Personas;
 using Serilog;
 using Galeria.Infraestructure.Interfaces.Log;
 using System.Text.Json;
+using Galeria.Domain.DTO.Usuarios.Personas;
 
 namespace Galeria.Application.Services.Usuarios.Personas
 {
