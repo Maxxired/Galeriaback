@@ -1,0 +1,2 @@
+2025-03-10 00:00:29.648 -05:00 [ERR] Role USUARIO does not exist.
+2025-03-10 00:14:49.449 -05:00 [ERR] An error occurred while saving the entity changes. See the inner exception for details.
