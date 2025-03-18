@@ -26,4 +26,10 @@ namespace Galeria.Domain.Common.ViewModels.Util
         public IFormFile Archivo { get; set; }
     }
 
+    public class FormImagenObraVM
+    {
+        public int idObra { get; set; }
+        public IFormFile archivo { get; set; }
+    }
+
 }

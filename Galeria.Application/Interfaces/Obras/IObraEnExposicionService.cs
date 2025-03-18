@@ -11,5 +11,10 @@ namespace Galeria.Application.Interfaces.Obras
 {
     public interface IObraEnExposicionService : IServiceBase<ObraEnExposicion, ObraEnExposicionDTO>
     {
+        Task<bool> CrearRelacionAsync(int idObra, int idExposicion);
+
+        Task<bool> EliminarRelacionAsync(int idObra, int idExposicion);
+
+        Task<List<Obra>> ListarObrasDeExposicionAsync(int idExposicion);
     }
 }

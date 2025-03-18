@@ -124,7 +124,7 @@ namespace Galeria.Application.Services.Seeders
 
         private async Task CreateRolesAsync(List<string> messages)
         {
-            string[] roleNames = { "Admin", "Usuario" };
+            string[] roleNames = { "Admin", "Usuario", "Artista" };
             foreach (var roleName in roleNames)
             {
                 var roleExist = await _roleManager.RoleExistsAsync(roleName);

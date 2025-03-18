@@ -10,7 +10,7 @@ using Galeria.Domain.Entities.Usuarios.Personas;
 namespace Galeria.Domain.Entities.Likes
 {
     [Table("Tbl_Likes")]
-    public class Like : BaseEntity
+    public class Like
     {
         [ForeignKey("Persona")]
         public int IdPersona { get; set; }

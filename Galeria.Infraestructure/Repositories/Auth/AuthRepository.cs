@@ -12,6 +12,11 @@ using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Galeria.Domain.Entities.Usuarios.Personas;
 using Galeria.Infraestructure.Interfaces.Usuarios.Personas;
+using Galeria.Domain.Entities.Usuarios.Artistas;
+using Galeria.Infraestructure.Repositories.Usuarios.Artistas;
+using Galeria.Domain.DTO.Usuarios.Artistas;
+using Galeria.Infraestructure.Interfaces.Usuarios.Artistas;
+using Galeria.Infraestructure.Repositories.Usuarios.Personas;
 
 namespace Galeria.Infraestructure.Repositories.Auth
 {
@@ -20,6 +25,7 @@ namespace Galeria.Infraestructure.Repositories.Auth
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         IPersonaRepository persona,
+        IArtistaRepository artista,
         IConfiguration config)
         : IAuthRepository
     {
@@ -72,13 +78,13 @@ namespace Galeria.Infraestructure.Repositories.Auth
             var crearUsuario = await userManager.CreateAsync(nuevoUsuario, socio.Password);
             if (!crearUsuario.Succeeded) return new ResponseHelperAuth() { Success = false, Message = "Error al crear usuario" };
 
-            var rolUsuario = await roleManager.FindByNameAsync("User");
+            var rolUsuario = await roleManager.FindByNameAsync("Usuario");
             if (rolUsuario is null)
             {
-                await roleManager.CreateAsync(new IdentityRole() { Name = "User" });
+                await roleManager.CreateAsync(new IdentityRole() { Name = "Usuario" });
             }
 
-            await userManager.AddToRoleAsync(nuevoUsuario, "User");
+            await userManager.AddToRoleAsync(nuevoUsuario, "Usuario");
 
             Persona nuevaPersona = new()
             {
@@ -94,7 +100,7 @@ namespace Galeria.Infraestructure.Repositories.Auth
             string userRole = roles.FirstOrDefault() ?? "User";
 
             var userSession = new UserSession(nuevoUsuario.Id, nuevoUsuario.Email, userRole);
-            string token = GenerateToken(userSession);
+            string token = await GenerateToken(userSession);
             string refreshToken = GenerateRefreshToken();
 
             await SaveRefreshToken(nuevoUsuario, refreshToken);
@@ -106,6 +112,62 @@ namespace Galeria.Infraestructure.Repositories.Auth
 
             return response;
         }
+        public async Task<ResponseHelperAuth> CrearCuentaArtista(RegistrarArtistaDTO socio)
+        {
+            ResponseHelperAuth response = new();
+
+            if (socio is null) return new ResponseHelperAuth() { Success = false, Message = "Datos inválidos" };
+
+            var userExistente = await userManager.FindByEmailAsync(socio.Email);
+            if (userExistente is not null) return new ResponseHelperAuth() { Success = false, Message = "El usuario ya está registrado" };
+
+            var nuevoUsuario = new ApplicationUser()
+            {
+                Email = socio.Email,
+                UserName = socio.Email
+            };
+
+            var crearUsuario = await userManager.CreateAsync(nuevoUsuario, socio.Password);
+            if (!crearUsuario.Succeeded) return new ResponseHelperAuth() { Success = false, Message = "Error al crear usuario" };
+
+            var rolUsuario = await roleManager.FindByNameAsync("Artista");
+            if (rolUsuario is null)
+            {
+                await roleManager.CreateAsync(new IdentityRole() { Name = "Artista" });
+            }
+
+            await userManager.AddToRoleAsync(nuevoUsuario, "Artista");
+
+            Artista nuevoArtista = new()
+            {
+                IdApplicationUser = nuevoUsuario.Id,
+                Nombres = socio.Nombres,
+                Apellidos = socio.Apellidos,
+                Pais = socio.Pais,
+                Biografia = socio.Biografia,
+                FechaNacimiento = socio.FechaNacimiento
+            };
+
+            var registroArtista = await artista.InsertAsync(nuevoArtista);
+            if (registroArtista == 0) return new ResponseHelperAuth() { Success = false, Message = "Error al registrar datos del artista" };
+
+            var roles = await userManager.GetRolesAsync(nuevoUsuario);
+            string userRole = roles.FirstOrDefault() ?? "Artista";
+
+            var userSession = new UserSession(nuevoUsuario.Id, nuevoUsuario.Email, userRole);
+            string token = await GenerateToken(userSession);
+            string refreshToken = GenerateRefreshToken();
+
+            await SaveRefreshToken(nuevoUsuario, refreshToken);
+
+            response.Success = true;
+            response.Message = "Artista registrado correctamente";
+            response.Token = token;
+            response.RefreshToken = refreshToken;
+
+            return response;
+        }
+
 
 
         public async Task<ResponseHelperAuth> LoginAccount(LoginDTO loginDTO)
@@ -130,7 +192,7 @@ namespace Galeria.Infraestructure.Repositories.Auth
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
             var userSession = new UserSession(getUser.Id, getUser.Email, getUserRole.First());
-            string token = GenerateToken(userSession);
+            string token = await GenerateToken(userSession);
 
             var refreshToken = GenerateRefreshToken();
             await SaveRefreshToken(getUser, refreshToken);
@@ -147,25 +209,64 @@ namespace Galeria.Infraestructure.Repositories.Auth
             return response;
         }
 
-        public string GenerateToken(UserSession user)
+        public async Task<string> GenerateToken(UserSession user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var userClaims = new[]
+            var userClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("Id", user.Id),
+                new Claim("Email", user.Email),
                 new Claim(ClaimTypes.Role, user.Role)
             };
+            Persona? personas = null;
+            Artista? artistas = null;
+
+            if (user.Role == "Usuario")
+            {
+                personas = await persona.GetSingleAsync(p => p.IdApplicationUser == user.Id);
+            }
+            else if (user.Role == "Artista")
+            {
+                artistas = await artista.GetSingleAsync(a => a.IdApplicationUser == user.Id);
+            }
+
+
+            if (user.Role == "Artista")
+            {
+                if (artistas != null)
+                {
+                    userClaims.Add(new Claim("idArtista", Convert.ToString(artistas.Id)));
+                    userClaims.Add(new Claim("Pais", artistas.Pais ?? ""));
+                    userClaims.Add(new Claim("Biografia", artistas.Biografia ?? ""));
+                    userClaims.Add(new Claim("FechaNacimiento", artistas.FechaNacimiento?.ToString("yyyy-MM-dd") ?? ""));
+                    userClaims.Add(new Claim("Nombres", artistas.Nombres));
+                    userClaims.Add(new Claim("Apellidos", artistas.Apellidos));
+                    userClaims.Add(new Claim("Edad", artistas.Edad.ToString()));
+                    userClaims.Add(new Claim("Sexo", artistas.Sexo.ToString()));
+                }
+            }
+            else if (user.Role == "Usuario")
+            {
+                if (personas != null)
+                {
+                    userClaims.Add(new Claim("idUsuario", Convert.ToString(personas.Id)));
+                    userClaims.Add(new Claim("Nombres", personas.Nombres));
+                    userClaims.Add(new Claim("Apellidos", personas.Apellidos));
+                    userClaims.Add(new Claim("Edad", personas.Edad.ToString()));
+                    userClaims.Add(new Claim("Sexo", personas.Sexo.ToString()));
+                }
+            }
             var token = new JwtSecurityToken(
                 issuer: config["Jwt:Issuer"],
                 audience: config["Jwt:Audience"],
                 claims: userClaims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.UtcNow.AddMinutes(int.Parse(config["Jwt:ExpirationMinutes"])),
                 signingCredentials: credentials
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        
         public string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -213,7 +314,7 @@ namespace Galeria.Infraestructure.Repositories.Auth
 
             var roles = await userManager.GetRolesAsync(user);
             var userSession = new UserSession(user.Id, user.Email, roles.First());
-            var newAccessToken = GenerateToken(userSession);
+            var newAccessToken = await GenerateToken(userSession);
             var newRefreshToken = GenerateRefreshToken();
 
             await SaveRefreshToken(user, newRefreshToken);

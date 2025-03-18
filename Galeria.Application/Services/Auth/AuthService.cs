@@ -12,6 +12,7 @@ using Serilog;
 using Galeria.Infraestructure.Interfaces.Log;
 using System.Text.Json;
 using Azure;
+using Galeria.Domain.DTO.Usuarios.Artistas;
 
 namespace Galeria.Application.Services.Auth
 {
@@ -108,6 +109,40 @@ namespace Galeria.Application.Services.Auth
 
                 string dataAsJson = JsonSerializer.Serialize(response);
                 await LogAction("RegistrarUsuario", dataAsJson);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+                response.Success = false;
+                response.Message = "Error interno del servidor";
+                await LogError(e);
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseHelperAuth> RegistrarArtista(RegistrarArtistaDTO socio)
+        {
+            ResponseHelperAuth response = new();
+
+            try
+            {
+                if (socio == null)
+                {
+                    response.Success = false;
+                    response.Message = "Datos inválidos";
+                    return response;
+                }
+
+                response = await _authRepository.CrearCuentaArtista(socio);
+
+                if (!response.Success)
+                {
+                    return response;
+                }
+
+                string dataAsJson = JsonSerializer.Serialize(response);
+                await LogAction("RegistrarArtista", dataAsJson);
             }
             catch (Exception e)
             {

@@ -3,6 +3,7 @@ using Galeria.Application.Interfaces.Auth;
 using Galeria.Domain.DTO.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Galeria.Domain.DTO.Usuarios.Artistas;
 
 namespace Galeria.API.Controllers.Auth
 {
@@ -29,6 +30,12 @@ namespace Galeria.API.Controllers.Auth
         public async Task<IActionResult> RegistrarUsuario(RegistrarUsuarioDTO registrarUsuario)
         {
             var response = await authService.RegistrarUsuario(registrarUsuario);
+            return Ok(response);
+        }
+        [HttpPost("registrarArtista")]
+        public async Task<IActionResult> RegistrarArtista(RegistrarArtistaDTO registrarUsuario)
+        {
+            var response = await authService.RegistrarArtista(registrarUsuario);
             return Ok(response);
         }
 
