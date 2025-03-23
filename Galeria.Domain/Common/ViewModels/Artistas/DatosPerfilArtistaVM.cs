@@ -1,6 +1,6 @@
-﻿namespace Galeria.Domain.Common.ViewModels.Personas
+﻿namespace Galeria.Domain.Common.ViewModels.Artistas
 {
-    public class DatosPerfilVM
+    public class DatosPerfilArtistaVM
     {
         public int Id { get; set; }
         public string Nombres { get; set; }

@@ -143,9 +143,9 @@ namespace Galeria.Infraestructure.Repositories.Auth
                 IdApplicationUser = nuevoUsuario.Id,
                 Nombres = socio.Nombres,
                 Apellidos = socio.Apellidos,
-                Pais = socio.Pais,
-                Biografia = socio.Biografia,
-                FechaNacimiento = socio.FechaNacimiento
+                Pais = "México",
+                Biografia = "Escribir biografia",
+                FechaNacimiento = DateTime.Now
             };
 
             var registroArtista = await artista.InsertAsync(nuevoArtista);
@@ -243,7 +243,6 @@ namespace Galeria.Infraestructure.Repositories.Auth
                     userClaims.Add(new Claim("Nombres", artistas.Nombres));
                     userClaims.Add(new Claim("Apellidos", artistas.Apellidos));
                     userClaims.Add(new Claim("Edad", artistas.Edad.ToString()));
-                    userClaims.Add(new Claim("Sexo", artistas.Sexo.ToString()));
                 }
             }
             else if (user.Role == "Usuario")
@@ -254,7 +253,6 @@ namespace Galeria.Infraestructure.Repositories.Auth
                     userClaims.Add(new Claim("Nombres", personas.Nombres));
                     userClaims.Add(new Claim("Apellidos", personas.Apellidos));
                     userClaims.Add(new Claim("Edad", personas.Edad.ToString()));
-                    userClaims.Add(new Claim("Sexo", personas.Sexo.ToString()));
                 }
             }
             var token = new JwtSecurityToken(

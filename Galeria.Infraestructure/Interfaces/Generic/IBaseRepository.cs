@@ -40,7 +40,7 @@ namespace Galeria.Infraestructure.Repositories.Generic
         /// <param name="filter">The filter.</param>
         /// <returns></returns>
         Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null);
-        Task<List<T>> GetAllFilterAsync(
+        Task<(List<T> Items, int Total)> GetAllFilterAsync(
             int? page = null, int? limit = null,
             string? orderBy = null, string? orderDirection = "asc",
             DateTime? startDate = null, DateTime? endDate = null,

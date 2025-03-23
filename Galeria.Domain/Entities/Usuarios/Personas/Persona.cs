@@ -11,7 +11,6 @@ namespace Galeria.Domain.Entities.Usuarios.Personas
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public int Edad { get; set; }
-        public Sexo Sexo { get; set; }
 
         [ForeignKey("ApplicationUser")]
         public string IdApplicationUser { get; set; }

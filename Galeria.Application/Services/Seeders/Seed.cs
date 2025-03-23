@@ -96,20 +96,20 @@ namespace Galeria.Application.Services.Seeders
             {
                 var personas = new[]
                 {
-                    new Persona { Nombres = "John", Apellidos = "Doe", Edad = 30, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "root@admin.com").Id },
-                    new Persona { Nombres = "Sarah", Apellidos = "Lee", Edad = 28, Sexo = Sexo.FEMENINO, IdApplicationUser = _context.Users.First(u => u.UserName == "socio@test.com").Id },
-                    new Persona { Nombres = "Mark", Apellidos = "Parker", Edad = 25, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "cliente@test.com").Id },
-                    new Persona { Nombres = "Juan", Apellidos = "Perez", Edad = 35, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "juan@gmail.com").Id },
-                    new Persona { Nombres = "Alonso", Apellidos = "Garcia", Edad = 40, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "alonso@gmail.com").Id },
-                    new Persona { Nombres = "Andres", Apellidos = "Hernandez", Edad = 45, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "andres@gmail.com").Id },
-                    new Persona { Nombres = "Diego", Apellidos = "Jimenez", Edad = 50, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "diego@gmail.com").Id },
-                    new Persona { Nombres = "Merida", Apellidos = "Lopez", Edad = 55, Sexo = Sexo.FEMENINO, IdApplicationUser = _context.Users.First(u => u.UserName == "merida@gmail.com").Id },
-                    new Persona { Nombres = "Jaime", Apellidos = "Gutierrez", Edad = 60, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "jaime@gmail.com").Id },
-                    new Persona { Nombres = "Alison", Apellidos = "Gomez", Edad = 65, Sexo = Sexo.FEMENINO, IdApplicationUser = _context.Users.First(u => u.UserName == "alison@gmail.com").Id },
-                    new Persona { Nombres = "Cochi", Apellidos = "Gutierrez", Edad = 70, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "cochi@gmail.com").Id },
-                    new Persona { Nombres = "David", Apellidos = "Gomez", Edad = 75, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "david@gmail.com").Id },
-                    new Persona { Nombres = "Erika", Apellidos = "Gomez", Edad = 80, Sexo = Sexo.FEMENINO, IdApplicationUser = _context.Users.First(u => u.UserName == "erika@gmail.com").Id },
-                    new Persona { Nombres = "Ocelot", Apellidos = "Gomez", Edad = 85, Sexo = Sexo.MASCULINO, IdApplicationUser = _context.Users.First(u => u.UserName == "ocelot@gmail.com").Id }
+                    new Persona { Nombres = "John", Apellidos = "Doe", Edad = 30, IdApplicationUser = _context.Users.First(u => u.UserName == "root@admin.com").Id },
+                    new Persona { Nombres = "Sarah", Apellidos = "Lee", Edad = 28, IdApplicationUser = _context.Users.First(u => u.UserName == "socio@test.com").Id },
+                    new Persona { Nombres = "Mark", Apellidos = "Parker", Edad = 25, IdApplicationUser = _context.Users.First(u => u.UserName == "cliente@test.com").Id },
+                    new Persona { Nombres = "Juan", Apellidos = "Perez", Edad = 35, IdApplicationUser = _context.Users.First(u => u.UserName == "juan@gmail.com").Id },
+                    new Persona { Nombres = "Alonso", Apellidos = "Garcia", Edad = 40, IdApplicationUser = _context.Users.First(u => u.UserName == "alonso@gmail.com").Id },
+                    new Persona { Nombres = "Andres", Apellidos = "Hernandez", Edad = 45, IdApplicationUser = _context.Users.First(u => u.UserName == "andres@gmail.com").Id },
+                    new Persona { Nombres = "Diego", Apellidos = "Jimenez", Edad = 50, IdApplicationUser = _context.Users.First(u => u.UserName == "diego@gmail.com").Id },
+                    new Persona { Nombres = "Merida", Apellidos = "Lopez", Edad = 55, IdApplicationUser = _context.Users.First(u => u.UserName == "merida@gmail.com").Id },
+                    new Persona { Nombres = "Jaime", Apellidos = "Gutierrez", Edad = 60, IdApplicationUser = _context.Users.First(u => u.UserName == "jaime@gmail.com").Id },
+                    new Persona { Nombres = "Alison", Apellidos = "Gomez", Edad = 65, IdApplicationUser = _context.Users.First(u => u.UserName == "alison@gmail.com").Id },
+                    new Persona { Nombres = "Cochi", Apellidos = "Gutierrez", Edad = 70, IdApplicationUser = _context.Users.First(u => u.UserName == "cochi@gmail.com").Id },
+                    new Persona { Nombres = "David", Apellidos = "Gomez", Edad = 75, IdApplicationUser = _context.Users.First(u => u.UserName == "david@gmail.com").Id },
+                    new Persona { Nombres = "Erika", Apellidos = "Gomez", Edad = 80, IdApplicationUser = _context.Users.First(u => u.UserName == "erika@gmail.com").Id },
+                    new Persona { Nombres = "Ocelot", Apellidos = "Gomez", Edad = 85, IdApplicationUser = _context.Users.First(u => u.UserName == "ocelot@gmail.com").Id }
 
                 };
 

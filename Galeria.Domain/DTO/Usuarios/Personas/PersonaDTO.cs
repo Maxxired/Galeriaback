@@ -8,7 +8,6 @@ namespace Galeria.Domain.DTO.Usuarios.Personas
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public int Edad { get; set; }
-        public Sexo Sexo { get; set; }
         public string IdApplicationUser { get; set; }
     }
 }

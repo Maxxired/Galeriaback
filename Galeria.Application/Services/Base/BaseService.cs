@@ -207,18 +207,27 @@ namespace Galeria.Application.Services.Base
             return response;
         }
         public async Task<ResponseHelper> GetAllFilterAsync(
-        int? page = null, int? limit = null,
-        string? orderBy = null, string? orderDirection = "asc",
-        DateTime? startDate = null, DateTime? endDate = null,
-        string? filterField = null, string? filterValue = null,
-        string? relationField = null, int? relationId = null)
+            int? page = null, int? limit = null,
+            string? orderBy = null, string? orderDirection = "asc",
+            DateTime? startDate = null, DateTime? endDate = null,
+            string? filterField = null, string? filterValue = null,
+            string? relationField = null, int? relationId = null)
         {
             ResponseHelper response = new ResponseHelper();
             try
             {
                 var data = await _repository.GetAllFilterAsync(page, limit, orderBy, orderDirection, startDate, endDate, filterField, filterValue, relationField, relationId);
+
+                var items = data.Items;
+                var total = data.Total;
+
                 response.Success = true;
-                response.Data = data;
+                response.Data = new
+                {
+                    Items = items,
+                    Total = total
+                };
+
                 string dataAsJson = JsonSerializer.Serialize(response.Data);
                 await LogAction("GetAllFilterAsync", dataAsJson);
             }

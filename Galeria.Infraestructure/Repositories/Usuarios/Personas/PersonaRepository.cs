@@ -17,10 +17,10 @@ namespace Galeria.Infraestructure.Repositories.Usuarios.Personas
 
         public async Task<int> ActualizarPerfilUsuario(string idApplicationUser, ActualizarPerfilVM datos)
         {
-            string sql = @"UPDATE Tbl_Personas SET Nombres = @nombres, Apellidos = @apellidos, Edad = @edad, Sexo = @sexo
+            string sql = @"UPDATE Tbl_Artistas SET Nombres = @nombres, Apellidos = @apellidos, Edad = @edad
                         WHERE IdApplicationUser = @idApplicationUser AND IsDeleted = 0";
             var result = await _context.Database.GetDbConnection().ExecuteAsync(sql, new { idApplicationUser,
-                nombres = datos.Nombres, apellidos = datos.Apellidos, edad = datos.Edad, sexo = datos.Sexo });
+                nombres = datos.Nombres, apellidos = datos.Apellidos, edad = datos.Edad });
             return result;
 
         }
@@ -48,7 +48,7 @@ namespace Galeria.Infraestructure.Repositories.Usuarios.Personas
 
         public async Task<DatosPerfilVM> GetDatosPerfil(string idApplicationUser)
         {
-            string sql = @"SELECT per.Nombres, per.Apellidos, per.Edad, per.Sexo, usr.AvatarURL FROM Tbl_Personas AS per
+            string sql = @"SELECT per.Nombres, per.Apellidos, per.Edad, usr.AvatarURL FROM Tbl_Personas AS per
                     INNER JOIN AspNetUsers AS usr ON usr.Id = per.IdApplicationUser AND usr.IsDeleted = 0
                     WHERE per.IdApplicationUser = @idApplicationuser AND per.IsDeleted = 0 ";
 
@@ -58,7 +58,7 @@ namespace Galeria.Infraestructure.Repositories.Usuarios.Personas
 
         public async Task<List<DatosPerfilVM>> GetTodosLosUsuarios()
         {
-            string sql = @"SELECT per.Id, per.Nombres, per.Apellidos, per.Edad, per.Sexo, per.idApplicationUser, usr.AvatarURL FROM Tbl_Personas AS per
+            string sql = @"SELECT per.Id, per.Nombres, per.Apellidos, per.Edad, per.idApplicationUser, usr.AvatarURL FROM Tbl_Personas AS per
                     INNER JOIN AspNetUsers AS usr ON usr.Id = per.IdApplicationUser AND usr.IsDeleted = 0
                     WHERE per.IsDeleted = 0 ";
 

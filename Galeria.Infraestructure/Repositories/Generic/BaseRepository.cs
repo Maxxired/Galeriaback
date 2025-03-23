@@ -124,7 +124,7 @@ namespace Galeria.Infraestructure.Repositories.Generic
 
             return await query.ToListAsync();
         }
-        public async Task<List<T>> GetAllFilterAsync(
+        public async Task<(List<T> Items, int Total)> GetAllFilterAsync(
             int? page = null, int? limit = null,
             string? orderBy = null, string? orderDirection = "asc",
             DateTime? startDate = null, DateTime? endDate = null,
@@ -137,7 +137,6 @@ namespace Galeria.Infraestructure.Repositories.Generic
 
             var parameters = new DynamicParameters();
 
-            // Filtrar por rango de fechas
             if (startDate.HasValue)
             {
                 sql.Append(" AND CreatedAt >= @StartDate");
@@ -149,37 +148,60 @@ namespace Galeria.Infraestructure.Repositories.Generic
                 parameters.Add("EndDate", endDate.Value);
             }
 
-            // Filtro por campo específico
             if (!string.IsNullOrEmpty(filterField) && !string.IsNullOrEmpty(filterValue))
             {
                 sql.Append($" AND {filterField} LIKE @FilterValue");
                 parameters.Add("FilterValue", $"%{filterValue}%");
             }
 
-            // Filtro por relación
             if (!string.IsNullOrEmpty(relationField) && relationId.HasValue)
             {
                 sql.Append($" AND {relationField} = @RelationId");
                 parameters.Add("RelationId", relationId.Value);
             }
 
-            // Ordenamiento
+            var countSql = new StringBuilder($"SELECT COUNT(*) FROM {tableName} WHERE IsDeleted = 0 ");
+
+            if (startDate.HasValue)
+            {
+                countSql.Append(" AND CreatedAt >= @StartDate");
+            }
+            if (endDate.HasValue)
+            {
+                countSql.Append(" AND CreatedAt <= @EndDate");
+            }
+            if (!string.IsNullOrEmpty(filterField) && !string.IsNullOrEmpty(filterValue))
+            {
+                countSql.Append($" AND {filterField} LIKE @FilterValue");
+            }
+            if (!string.IsNullOrEmpty(relationField) && relationId.HasValue)
+            {
+                countSql.Append($" AND {relationField} = @RelationId");
+            }
+
+            var total = await Context.Database.GetDbConnection().ExecuteScalarAsync<int>(countSql.ToString(), parameters);
+
             if (!string.IsNullOrEmpty(orderBy))
             {
                 sql.Append($" ORDER BY {orderBy} {orderDirection}");
             }
 
-            // Paginación opcional
+            if (string.IsNullOrEmpty(orderBy))
+            {
+                orderBy = "CreatedAt";
+                sql.Append($" ORDER BY {orderBy} {orderDirection}");
+            }
+
             if (page.HasValue && limit.HasValue)
             {
                 int offset = (page.Value - 1) * limit.Value;
-                sql.Append(" LIMIT @Limit OFFSET @Offset");
-                parameters.Add("Limit", limit.Value);
+                sql.Append(" OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY");
                 parameters.Add("Offset", offset);
+                parameters.Add("Limit", limit.Value);
             }
 
-            var result = await Context.Database.GetDbConnection().QueryAsync<T>(sql.ToString(), parameters);
-            return result.ToList();
+            var items = await Context.Database.GetDbConnection().QueryAsync<T>(sql.ToString(), parameters);
+            return (items.ToList(), total);
         }
 
 

@@ -234,7 +234,6 @@ namespace Galeria.Infraestructure.Migrations
                     Nombres = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Edad = table.Column<int>(type: "int", nullable: false),
-                    Sexo = table.Column<int>(type: "int", nullable: false),
                     IdApplicationUser = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)

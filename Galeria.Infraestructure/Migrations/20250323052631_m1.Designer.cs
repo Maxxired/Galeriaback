@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Galeria.Infraestructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250318200413_m1")]
+    [Migration("20250323052631_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -378,9 +378,6 @@ namespace Galeria.Infraestructure.Migrations
                     b.Property<string>("Nombres")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Sexo")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
