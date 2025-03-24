@@ -5,5 +5,6 @@
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public int Edad { get; set; }
+        public string? Contraseña { get; set; } 
     }
 }

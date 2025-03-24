@@ -1,9 +1,11 @@
 ﻿using Dapper;
 using Galeria.Domain.Common.ViewModels.Artistas;
 using Galeria.Domain.Common.ViewModels.Personas;
+using Galeria.Domain.Entities;
 using Galeria.Domain.Entities.Usuarios.Artistas;
 using Galeria.Infraestructure.Interfaces.Usuarios.Artistas;
 using Galeria.Infraestructure.Repositories.Generic;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Galeria.Infraestructure.Repositories.Usuarios.Artistas
@@ -15,24 +17,55 @@ namespace Galeria.Infraestructure.Repositories.Usuarios.Artistas
         {
             _context = context;
         }
+
         public async Task<int> ActualizarPerfilArtista(string idApplicationUser, ActualizarPerfilArtistaVM datos)
         {
-            string sql = @"UPDATE Tbl_Personas SET Nombres = @nombres, Apellidos = @apellidos, Edad = @edad, Pais = @pais, Biografia = @biografia
-                        WHERE IdApplicationUser = @idApplicationUser AND IsDeleted = 0";
-            var result = await _context.Database.GetDbConnection().ExecuteAsync(sql, new
-            {
-                idApplicationUser,
-                nombres = datos.Nombres,
-                apellidos = datos.Apellidos,
-                edad = datos.Edad,
-                pais = datos.Pais,
-                biografia = datos.Bigrafia
-            });
-            return result;
+                try
+                {
+                    string sqlPersona = @"
+                    UPDATE Tbl_Artistas 
+                    SET Nombres = @nombres, 
+                        Apellidos = @apellidos, 
+                        Edad = @edad, 
+                        Pais = @pais, 
+                        Biografia = @biografia
+                    WHERE IdApplicationUser = @idApplicationUser AND IsDeleted = 0";
 
-        }
+                    var parametros = new
+                    {
+                        idApplicationUser,
+                        nombres = datos.Nombres,
+                        apellidos = datos.Apellidos,
+                        edad = datos.Edad,
+                        pais = datos.Pais,
+                        biografia = datos.Bigrafia
+                    };
 
-        public async Task<int> SubirFotoPerfilArtista(string idApplicationUser, string url)
+                    await _context.Database.GetDbConnection().ExecuteAsync(sqlPersona, parametros);
+
+                    if (!string.IsNullOrEmpty(datos.Contraseña))
+                    {
+                        var passwordHasher = new PasswordHasher<ApplicationUser>();
+                        string passwordHash = passwordHasher.HashPassword(null, datos.Contraseña);
+
+                        string sqlUsuario = @"
+                        UPDATE AspNetUsers 
+                        SET PasswordHash = @passwordHash
+                        WHERE Id = @idApplicationUser";
+
+                        await _context.Database.GetDbConnection().ExecuteAsync(sqlUsuario, new { idApplicationUser, passwordHash });
+                    }
+
+                    return 1;
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+
+
+    public async Task<int> SubirFotoPerfilArtista(string idApplicationUser, string url)
         {
             string sql = @"UPDATE AspNetUsers SET AvatarURL = @url WHERE IsDeleted = 0 AND Id = @idApplicationUser";
             var result = await _context.Database.GetDbConnection().ExecuteAsync(sql, new { idApplicationUser, url });

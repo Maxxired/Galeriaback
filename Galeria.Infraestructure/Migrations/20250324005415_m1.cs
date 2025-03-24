@@ -226,6 +226,33 @@ namespace Galeria.Infraestructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tbl_Artistas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombres = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Edad = table.Column<int>(type: "int", nullable: false),
+                    Pais = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Biografia = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FechaNacimiento = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IdApplicationUser = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tbl_Artistas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tbl_Artistas_AspNetUsers_IdApplicationUser",
+                        column: x => x.IdApplicationUser,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tbl_Personas",
                 columns: table => new
                 {
@@ -246,26 +273,6 @@ namespace Galeria.Infraestructure.Migrations
                         column: x => x.IdApplicationUser,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tbl_Artistas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Pais = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Biografia = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FechaNacimiento = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tbl_Artistas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tbl_Artistas_Tbl_Personas_Id",
-                        column: x => x.Id,
-                        principalTable: "Tbl_Personas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -437,6 +444,11 @@ namespace Galeria.Infraestructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tbl_Artistas_IdApplicationUser",
+                table: "Tbl_Artistas",
+                column: "IdApplicationUser");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tbl_Comentarios_IdObra",
                 table: "Tbl_Comentarios",
                 column: "IdObra");
@@ -518,6 +530,9 @@ namespace Galeria.Infraestructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Tbl_Personas");
+
+            migrationBuilder.DropTable(
                 name: "Tbl_Categorias");
 
             migrationBuilder.DropTable(
@@ -528,9 +543,6 @@ namespace Galeria.Infraestructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tbl_Artistas");
-
-            migrationBuilder.DropTable(
-                name: "Tbl_Personas");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

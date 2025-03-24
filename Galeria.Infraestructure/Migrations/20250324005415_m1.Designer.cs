@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Galeria.Infraestructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250323052631_m1")]
+    [Migration("20250324005415_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -350,6 +350,54 @@ namespace Galeria.Infraestructure.Migrations
                     b.ToTable("Tbl_ObrasEnExposicion");
                 });
 
+            modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Artistas.Artista", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Apellidos")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Biografia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Edad")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("FechaNacimiento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IdApplicationUser")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombres")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Pais")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdApplicationUser");
+
+                    b.ToTable("Tbl_Artistas");
+                });
+
             modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Personas.Persona", b =>
                 {
                     b.Property<int>("Id")
@@ -384,8 +432,6 @@ namespace Galeria.Infraestructure.Migrations
                     b.HasIndex("IdApplicationUser");
 
                     b.ToTable("Tbl_Personas");
-
-                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -521,24 +567,6 @@ namespace Galeria.Infraestructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Artistas.Artista", b =>
-                {
-                    b.HasBaseType("Galeria.Domain.Entities.Usuarios.Personas.Persona");
-
-                    b.Property<string>("Biografia")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Pais")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("Tbl_Artistas");
-                });
-
             modelBuilder.Entity("Galeria.Domain.Entities.Comentarios.Comentario", b =>
                 {
                     b.HasOne("Galeria.Domain.Entities.Obras.Obra", "Obra")
@@ -626,6 +654,17 @@ namespace Galeria.Infraestructure.Migrations
                     b.Navigation("Obra");
                 });
 
+            modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Artistas.Artista", b =>
+                {
+                    b.HasOne("Galeria.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("IdApplicationUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Personas.Persona", b =>
                 {
                     b.HasOne("Galeria.Domain.Entities.ApplicationUser", "ApplicationUser")
@@ -686,15 +725,6 @@ namespace Galeria.Infraestructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Artistas.Artista", b =>
-                {
-                    b.HasOne("Galeria.Domain.Entities.Usuarios.Personas.Persona", null)
-                        .WithOne()
-                        .HasForeignKey("Galeria.Domain.Entities.Usuarios.Artistas.Artista", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Galeria.Domain.Entities.Categorias.Categoria", b =>
                 {
                     b.Navigation("ObrasCategorias");
@@ -716,16 +746,16 @@ namespace Galeria.Infraestructure.Migrations
                     b.Navigation("ObrasCategorias");
                 });
 
+            modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Artistas.Artista", b =>
+                {
+                    b.Navigation("Obras");
+                });
+
             modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Personas.Persona", b =>
                 {
                     b.Navigation("Comentarios");
 
                     b.Navigation("Likes");
-                });
-
-            modelBuilder.Entity("Galeria.Domain.Entities.Usuarios.Artistas.Artista", b =>
-                {
-                    b.Navigation("Obras");
                 });
 #pragma warning restore 612, 618
         }

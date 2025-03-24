@@ -7,5 +7,6 @@
         public int Edad { get; set; }
         public string Pais { get; set; }
         public string Bigrafia { get; set; }
+        public string? Contraseña { get; set; }
     }
 }

@@ -69,8 +69,6 @@ namespace Galeria.Application.Services.Auth
                 if (result.Success)
                 {
                     response = result;
-                    var nombrePersona = await _personaRepository.GetSingleAsync(p => p.IdApplicationUser == response.User.Id);
-                    response.User.Nombre = $"{nombrePersona.Nombres} {nombrePersona.Apellidos}".Trim();
                 } else
                 {
                     response.Message = result.Message;

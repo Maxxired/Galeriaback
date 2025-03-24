@@ -4,6 +4,8 @@ using Galeria.Domain.Common.ViewModels.Personas;
 using Galeria.Domain.Entities.Usuarios.Personas;
 using Galeria.Infraestructure.Interfaces.Usuarios.Personas;
 using Galeria.Infraestructure.Repositories.Generic;
+using Galeria.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Galeria.Infraestructure.Repositories.Usuarios.Personas
 {
@@ -17,13 +19,46 @@ namespace Galeria.Infraestructure.Repositories.Usuarios.Personas
 
         public async Task<int> ActualizarPerfilUsuario(string idApplicationUser, ActualizarPerfilVM datos)
         {
-            string sql = @"UPDATE Tbl_Artistas SET Nombres = @nombres, Apellidos = @apellidos, Edad = @edad
-                        WHERE IdApplicationUser = @idApplicationUser AND IsDeleted = 0";
-            var result = await _context.Database.GetDbConnection().ExecuteAsync(sql, new { idApplicationUser,
-                nombres = datos.Nombres, apellidos = datos.Apellidos, edad = datos.Edad });
-            return result;
+            try
+            {
+                string sqlArtista = @"
+                    UPDATE Tbl_Personas 
+                    SET Nombres = @nombres, 
+                        Apellidos = @apellidos, 
+                        Edad = @edad
+                    WHERE IdApplicationUser = @idApplicationUser AND IsDeleted = 0";
 
+                var parametros = new
+                {
+                    idApplicationUser,
+                    nombres = datos.Nombres,
+                    apellidos = datos.Apellidos,
+                    edad = datos.Edad
+                };
+
+                await _context.Database.GetDbConnection().ExecuteAsync(sqlArtista, parametros);
+
+                if (!string.IsNullOrEmpty(datos.Contraseña))
+                {
+                    var passwordHasher = new PasswordHasher<ApplicationUser>();
+                    string passwordHash = passwordHasher.HashPassword(null, datos.Contraseña);
+
+                    string sqlUsuario = @"
+                        UPDATE AspNetUsers 
+                        SET PasswordHash = @passwordHash
+                        WHERE Id = @idApplicationUser";
+
+                    await _context.Database.GetDbConnection().ExecuteAsync(sqlUsuario, new { idApplicationUser, passwordHash });
+                }
+
+                return 1;
+            }
+            catch
+            {
+                throw;
+            }
         }
+
 
         public async Task<int> SubirFotoPerfil(string idApplicationUser, string url)
         {
