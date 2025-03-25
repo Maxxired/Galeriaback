@@ -82,7 +82,7 @@ namespace Galeria.API.Controllers.Obras
             try
             {
                 var obra = await _service.CreateObraAsync(obraDto);
-                return Ok("Obra creada");
+                return Ok(obra);
             }
             catch (Exception ex)
             {

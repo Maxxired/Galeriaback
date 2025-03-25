@@ -25,18 +25,20 @@ namespace Galeria.Application.Services.Obras
     {
         private readonly IMapper _mapper;
         private readonly IObraRepository _repository;
+        private readonly IObraCategoriaRepository _obraCategoriaRepository;
         private readonly ILogActionRepository _LogAction;
         private readonly ILogErrorRepository _LogError;
         private readonly IWebHostEnvironment _env;
         private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
 
-        public ObraService(IObraRepository repository, IMapper mapper, ILogActionRepository logAction, ILogErrorRepository logError, IWebHostEnvironment env) : base(mapper, repository, logAction, logError)
+        public ObraService(IObraRepository repository, IMapper mapper, ILogActionRepository logAction, ILogErrorRepository logError, IWebHostEnvironment env, IObraCategoriaRepository obraCategoriaRepository) : base(mapper, repository, logAction, logError)
         {
             _mapper = mapper;
             _repository = repository;
             _LogAction = logAction;
             _LogError = logError;
             _env = env;
+            _obraCategoriaRepository = obraCategoriaRepository;
         }
 
         public async Task<ResponseHelper> SubirImagenObra(int idObra, IFormFile archivo)
@@ -208,14 +210,15 @@ namespace Galeria.Application.Services.Obras
 
             if (obraDto.CategoriaIds != null)
             {
-                obra.ObrasCategorias.Clear();
-                obra.ObrasCategorias = obraDto.CategoriaIds.Select(ci => new ObraCategoria { IdCategoria = ci }).ToList();
+                await _obraCategoriaRepository.RemoveByObraIdAsync(id);
+                var nuevasCategorias = obraDto.CategoriaIds.Select(ci => new ObraCategoria { IdObra = id, IdCategoria = ci }).ToList();
+                await _obraCategoriaRepository.InsertManyAsync(nuevasCategorias);
             }
 
-            var updatedObra = await _repository.UpdateAsync(obra);
-
-            return updatedObra;
+            return await _repository.UpdateAsync(obra);
         }
+
+
         public async Task<IEnumerable<ObraQueryDTO>> GetByTituloAsync(string titulo, int skip, int take)
         {
             try

@@ -23,5 +23,11 @@ namespace Galeria.Application.Interfaces.Likes
         Task<List<ObrasDTO>> GetLikesByUserAsync(string token);
 
         Task<bool> DeleteAllLikesAsync();
+        Task<(List<ObraLikesDTO> Items, int Total)> GetAllLikesFilterAsync(
+        int? page = null, int? limit = null,
+        string? orderBy = null, string? orderDirection = "asc",
+        DateTime? startDate = null, DateTime? endDate = null,
+        string? filterField = null, string? filterValue = null,
+        string? relationField = null, int? relationId = null);
     }
 }

@@ -227,9 +227,6 @@ namespace Galeria.Application.Services.Base
                     Items = items,
                     Total = total
                 };
-
-                string dataAsJson = JsonSerializer.Serialize(response.Data);
-                await LogAction("GetAllFilterAsync", dataAsJson);
             }
             catch (Exception e)
             {

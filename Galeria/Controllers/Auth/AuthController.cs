@@ -40,11 +40,15 @@ namespace Galeria.API.Controllers.Auth
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken([FromBody] string token)
+        public async Task<IActionResult> RefreshToken(TokenDTO tokenDTO)
         {
-            var response = await authService.RefreshTokenAsync(token);
+            var response = await authService.RefreshTokenAsync(tokenDTO.token);
 
             return Ok(new { AccessToken = response.Token, RefreshToken = response.RefreshToken });
+        }
+
+        public class TokenDTO { 
+            public string token { get; set; }
         }
     }
 }

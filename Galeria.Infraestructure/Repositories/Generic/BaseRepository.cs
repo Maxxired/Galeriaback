@@ -37,7 +37,11 @@ namespace Galeria.Infraestructure.Repositories.Generic
             var createdAtProperty = typeof(T).GetProperty("CreatedAt");
             if (createdAtProperty != null && createdAtProperty.PropertyType == typeof(DateTime))
             {
-                createdAtProperty.SetValue(entity, DateTime.UtcNow);
+                var currentValue = createdAtProperty.GetValue(entity);
+                if (currentValue == null || (DateTime)currentValue == default)
+                {
+                    createdAtProperty.SetValue(entity, DateTime.UtcNow);
+                }
             }
 
             Context.Set<T>().Add(entity);

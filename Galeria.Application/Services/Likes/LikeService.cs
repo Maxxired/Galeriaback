@@ -101,5 +101,18 @@ namespace Galeria.Application.Services.Likes
                 return false;
             }
         }
+
+        public async Task<(List<ObraLikesDTO> Items, int Total)> GetAllLikesFilterAsync(
+        int? page = null, int? limit = null,
+        string? orderBy = null, string? orderDirection = "asc",
+        DateTime? startDate = null, DateTime? endDate = null,
+        string? filterField = null, string? filterValue = null,
+        string? relationField = null, int? relationId = null)
+        {
+            return await _repository.GetAllLikesFilterAsync(
+                page, limit, orderBy, orderDirection,
+                startDate, endDate, filterField, filterValue,
+                relationField, relationId);
+        }
     }
 }

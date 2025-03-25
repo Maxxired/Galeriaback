@@ -90,7 +90,8 @@ namespace Galeria.Infraestructure.Repositories.Auth
             {
                 IdApplicationUser = nuevoUsuario.Id,
                 Nombres = socio.Nombres,
-                Apellidos = socio.Apellidos
+                Apellidos = socio.Apellidos,
+                Edad = 18
             };
 
             var registroPersona = await persona.InsertAsync(nuevaPersona);
@@ -145,7 +146,8 @@ namespace Galeria.Infraestructure.Repositories.Auth
                 Apellidos = socio.Apellidos,
                 Pais = "México",
                 Biografia = "Escribir biografia",
-                FechaNacimiento = DateTime.Now
+                FechaNacimiento = DateTime.Now,
+                Edad = 18
             };
 
             var registroArtista = await artista.InsertAsync(nuevoArtista);

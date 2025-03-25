@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using Galeria.Domain.DTO.Likes;
 using Galeria.Domain.DTO.Obras;
 using Galeria.Domain.Entities.Likes;
@@ -121,6 +122,86 @@ namespace Galeria.Infraestructure.Repositories.Likes
 
             return likesGrouped;
         }
+        public async Task<(List<ObraLikesDTO> Items, int Total)> GetAllLikesFilterAsync(
+      int? page = null, int? limit = null,
+      string? orderBy = null, string? orderDirection = "asc",
+      DateTime? startDate = null, DateTime? endDate = null,
+      string? filterField = null, string? filterValue = null,
+      string? relationField = null, int? relationId = null)
+        {
+            var sql = new StringBuilder(@"
+                SELECT 
+                    l.IdObra AS LibroId, 
+                    o.Titulo AS TituloLibro, 
+                    COUNT(l.IdPersona) AS TotalLikes, 
+                    STRING_AGG(p.Nombres, ', ') AS UsuariosQueDieronLike
+                FROM Tbl_Likes l
+                JOIN Tbl_Personas p ON l.IdPersona = p.Id
+                JOIN Tbl_Obras o ON l.IdObra = o.Id
+                WHERE 1=1");
+
+            var parameters = new DynamicParameters();
+
+            if (startDate.HasValue)
+            {
+                sql.Append(" AND l.FechaLike >= @StartDate");
+                parameters.Add("StartDate", startDate.Value);
+            }
+            if (endDate.HasValue)
+            {
+                sql.Append(" AND l.FechaLike <= @EndDate");
+                parameters.Add("EndDate", endDate.Value);
+            }
+
+            if (!string.IsNullOrEmpty(filterField) && !string.IsNullOrEmpty(filterValue))
+            {
+                sql.Append($" AND {filterField} LIKE @FilterValue");
+                parameters.Add("FilterValue", $"%{filterValue}%");
+            }
+
+            if (!string.IsNullOrEmpty(relationField) && relationId.HasValue)
+            {
+                sql.Append($" AND {relationField} = @RelationId");
+                parameters.Add("RelationId", relationId.Value);
+            }
+
+            sql.Append(" GROUP BY l.IdObra, o.Titulo");
+
+            var countSql = new StringBuilder("SELECT COUNT(DISTINCT l.IdObra) FROM Tbl_Likes l WHERE 1=1");
+
+            if (startDate.HasValue)
+                countSql.Append(" AND l.FechaLike >= @StartDate");
+            if (endDate.HasValue)
+                countSql.Append(" AND l.FechaLike <= @EndDate");
+            if (!string.IsNullOrEmpty(filterField) && !string.IsNullOrEmpty(filterValue))
+                countSql.Append($" AND {filterField} LIKE @FilterValue");
+            if (!string.IsNullOrEmpty(relationField) && relationId.HasValue)
+                countSql.Append($" AND {relationField} = @RelationId");
+
+            var total = await _context.Database.GetDbConnection().ExecuteScalarAsync<int>(countSql.ToString(), parameters);
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sql.Append($" ORDER BY {orderBy} {orderDirection}");
+            }
+            else
+            {
+                sql.Append(" ORDER BY TotalLikes DESC");
+            }
+
+            if (page.HasValue && limit.HasValue)
+            {
+                int offset = (page.Value - 1) * limit.Value;
+                sql.Append(" OFFSET @Offset ROWS FETCH NEXT @Limit ROWS ONLY");
+                parameters.Add("Offset", offset);
+                parameters.Add("Limit", limit.Value);
+            }
+
+            var likesGrouped = await _context.Database.GetDbConnection().QueryAsync<ObraLikesDTO>(sql.ToString(), parameters);
+            return (likesGrouped.ToList(), total);
+        }
+
+
         public async Task<List<ObrasDTO>> GetLikesByUserAsync(string token)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -140,11 +221,13 @@ namespace Galeria.Infraestructure.Repositories.Likes
 
             var likedBooks = await _context.Likes
                 .Where(l => l.IdPersona == usuario.Id)
-                .Include(l => l.IdObra)
+                .Include(l => l.Obra)  // Cambiado de IdObra a Obra
+                .ThenInclude(o => o.Artista)  // Necesario para acceder a Artista.Nombres
                 .Select(l => new ObrasDTO
                 {
                     Id = l.Obra.Id,
                     Titulo = l.Obra.Titulo,
+                    Descripcion = l.Obra.Descripcion,
                     ArtistaNombre = l.Obra.Artista.Nombres,
                 })
                 .ToListAsync();

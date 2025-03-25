@@ -90,5 +90,29 @@ namespace Galeria.API.Controllers.Likes
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetAllLikes(
+        [FromQuery] int? page = null,
+        [FromQuery] int? limit = null,
+        [FromQuery] string? orderBy = null,
+        [FromQuery] string? orderDirection = "asc",
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null,
+        [FromQuery] string? filterField = null,
+        [FromQuery] string? filterValue = null,
+        [FromQuery] string? relationField = null,
+        [FromQuery] int? relationId = null)
+        {
+            var result = await _service.GetAllLikesFilterAsync(
+                page, limit, orderBy, orderDirection,
+                startDate, endDate, filterField, filterValue,
+                relationField, relationId);
+
+            return Ok(new
+            {
+                Total = result.Total,
+                Likes = result.Items
+            });
+        }
     }
 }

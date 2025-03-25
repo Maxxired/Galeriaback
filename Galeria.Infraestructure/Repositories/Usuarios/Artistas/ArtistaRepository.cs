@@ -38,7 +38,7 @@ namespace Galeria.Infraestructure.Repositories.Usuarios.Artistas
                         apellidos = datos.Apellidos,
                         edad = datos.Edad,
                         pais = datos.Pais,
-                        biografia = datos.Bigrafia
+                        biografia = datos.Biografia
                     };
 
                     await _context.Database.GetDbConnection().ExecuteAsync(sqlPersona, parametros);
