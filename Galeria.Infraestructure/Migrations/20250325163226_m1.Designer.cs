@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Galeria.Infraestructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250324005415_m1")]
+    [Migration("20250325163226_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -183,6 +183,9 @@ namespace Galeria.Infraestructure.Migrations
                     b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("IdArtista")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -191,6 +194,8 @@ namespace Galeria.Infraestructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdArtista");
 
                     b.ToTable("Tbl_Exposiciones");
                 });
@@ -584,6 +589,17 @@ namespace Galeria.Infraestructure.Migrations
                     b.Navigation("Obra");
 
                     b.Navigation("Persona");
+                });
+
+            modelBuilder.Entity("Galeria.Domain.Entities.Exposiciones.Exposicion", b =>
+                {
+                    b.HasOne("Galeria.Domain.Entities.Usuarios.Artistas.Artista", "Artista")
+                        .WithMany()
+                        .HasForeignKey("IdArtista")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artista");
                 });
 
             modelBuilder.Entity("Galeria.Domain.Entities.Likes.Like", b =>

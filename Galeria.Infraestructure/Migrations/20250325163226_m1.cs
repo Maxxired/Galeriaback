@@ -70,23 +70,6 @@ namespace Galeria.Infraestructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tbl_Exposiciones",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tbl_Exposiciones", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tbl_LogAction",
                 columns: table => new
                 {
@@ -276,6 +259,30 @@ namespace Galeria.Infraestructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tbl_Exposiciones",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FechaInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdArtista = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tbl_Exposiciones", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tbl_Exposiciones_Tbl_Artistas_IdArtista",
+                        column: x => x.IdArtista,
+                        principalTable: "Tbl_Artistas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tbl_Obras",
                 columns: table => new
                 {
@@ -457,6 +464,11 @@ namespace Galeria.Infraestructure.Migrations
                 name: "IX_Tbl_Comentarios_IdPersona",
                 table: "Tbl_Comentarios",
                 column: "IdPersona");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tbl_Exposiciones_IdArtista",
+                table: "Tbl_Exposiciones",
+                column: "IdArtista");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tbl_Likes_IdObra",
