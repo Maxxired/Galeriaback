@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Galeria.Application.Interfaces.Comentarios;
 using Galeria.Application.Services.Base;
+using Galeria.Domain.Common.ViewModels.Util;
 using Galeria.Domain.DTO.Comentarios;
 using Galeria.Domain.Entities.Comentarios;
 using Galeria.Infraestructure.Interfaces.Comentarios;
@@ -26,6 +27,35 @@ namespace Galeria.Application.Services.Comentarios
             _repository = repository;
             _LogAction = logAction;
             _LogError = logError;
+        }
+
+        public async Task<ResponseHelper> GetComentarioDatos(
+           int? page = null, int? limit = null,
+           string? orderBy = null, string? orderDirection = "asc",
+           DateTime? startDate = null, DateTime? endDate = null,
+           string? filterField = null, string? filterValue = null)
+        {
+            ResponseHelper response = new ResponseHelper();
+            try
+            {
+                var data = await _repository.GetComentarioDatos(page, limit, orderBy, orderDirection, startDate, endDate, filterField, filterValue);
+
+                var items = data.Items;
+                var total = data.Total;
+
+                response.Success = true;
+                response.Data = new
+                {
+                    Items = items,
+                    Total = total
+                };
+            }
+            catch (Exception e)
+            {
+                await LogError(e);
+                response.Message = e.Message;
+            }
+            return response;
         }
     }
 }

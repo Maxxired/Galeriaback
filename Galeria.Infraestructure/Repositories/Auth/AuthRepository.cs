@@ -231,6 +231,9 @@ namespace Galeria.Infraestructure.Repositories.Auth
             else if (user.Role == "Artista")
             {
                 artistas = await artista.GetSingleAsync(a => a.IdApplicationUser == user.Id);
+            }else
+            {
+                personas = await persona.GetSingleAsync(p => p.IdApplicationUser == user.Id);
             }
 
 
@@ -257,13 +260,23 @@ namespace Galeria.Infraestructure.Repositories.Auth
                     userClaims.Add(new Claim("Edad", personas.Edad.ToString()));
                 }
             }
-            var token = new JwtSecurityToken(
-                issuer: config["Jwt:Issuer"],
-                audience: config["Jwt:Audience"],
-                claims: userClaims,
-                expires: DateTime.UtcNow.AddMinutes(int.Parse(config["Jwt:ExpirationMinutes"])),
-                signingCredentials: credentials
-                );
+            else
+            {
+                if (personas != null)
+                {
+                    userClaims.Add(new Claim("idUsuario", Convert.ToString(personas.Id)));
+                    userClaims.Add(new Claim("Nombres", personas.Nombres));
+                    userClaims.Add(new Claim("Apellidos", personas.Apellidos));
+                    userClaims.Add(new Claim("Edad", personas.Edad.ToString()));
+                }
+            }
+                var token = new JwtSecurityToken(
+                    issuer: config["Jwt:Issuer"],
+                    audience: config["Jwt:Audience"],
+                    claims: userClaims,
+                    expires: DateTime.UtcNow.AddMinutes(int.Parse(config["Jwt:ExpirationMinutes"])),
+                    signingCredentials: credentials
+                    );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         
