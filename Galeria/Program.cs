@@ -9,6 +9,7 @@ using Galeria.WebAPI;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,6 +95,19 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/Uploads"
 });
 
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Error al aplicar las migraciones");
+        throw; // o manejar el error según convenga
+    }
+}
 
 
 app.UseHttpsRedirection();
