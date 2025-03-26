@@ -102,7 +102,8 @@ namespace Galeria.Infraestructure.Repositories.Likes
             {
                 IdObra = libroId,
                 TotalLikes = likes.Count,
-                UsuariosQueDieronLike = likes.Select(l => l.Persona.Nombres).ToList()
+                UsuariosQueDieronLike = likes.Select(l => l.Persona.Nombres).ToList(),
+                UsuariosQueDieronLikeId = likes.Select(l => l.Persona.IdApplicationUser).ToList()
             };
         }
         public async Task<List<LibroLikesDTO>> GetAllLikesInfoAsync()
@@ -228,6 +229,7 @@ namespace Galeria.Infraestructure.Repositories.Likes
                     Id = l.Obra.Id,
                     Titulo = l.Obra.Titulo,
                     Descripcion = l.Obra.Descripcion,
+                    Slug = l.Obra.Slug,
                     ArtistaNombre = l.Obra.Artista.Nombres,
                 })
                 .ToListAsync();

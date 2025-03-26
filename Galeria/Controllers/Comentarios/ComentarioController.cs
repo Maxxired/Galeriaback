@@ -17,5 +17,16 @@ namespace Galeria.API.Controllers.Comentarios
         {
             _service = service;
         }
+        [HttpGet("datos")]
+        public async Task<ActionResult<List<ComentarioDatosDTO>>> ComentarioDatos(
+        [FromQuery] int? page = null, [FromQuery] int? limit = null,
+        [FromQuery] string? orderBy = null, [FromQuery] string? orderDirection = "asc",
+        [FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null,
+        [FromQuery] string? filterField = null, [FromQuery] string? filterValue = null)
+        {
+            var result = await _service.GetComentarioDatos(page, limit, orderBy, orderDirection, startDate, endDate, filterField, filterValue);
+            return Ok(result);
+        }
     }
+    
 }
